@@ -1,86 +1,67 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES } from "@/data/articles";
+import Logo from "./Logo";
+
+const linkCls = "text-[0.9rem] text-body hover:text-ink transition-colors duration-200";
 
 const Footer = () => (
-  <footer data-testid="site-footer" className="bg-ink dark:bg-navy-950 text-white border-t border-transparent dark:border-white/10 mt-auto transition-colors duration-200">
-    <div className="max-w-7xl mx-auto px-6 py-14 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-      <div className="lg:col-span-2">
-        <Link to="/" data-testid="footer-logo" className="flex items-center gap-3">
-          <span className="w-9 h-9 bg-gold flex items-center justify-center">
-            <span className="font-headline font-black text-ink text-xl leading-none">D</span>
-          </span>
-          <span className="font-headline font-black text-2xl tracking-tight">
-            DUBAI STARTUPS <span className="italic text-gold">DAILY</span>
-          </span>
-        </Link>
-        <p className="mt-5 max-w-md text-sm leading-relaxed text-white/65">
-          A trusted digital destination for Dubai’s startup, business and technology news — covering the
-          companies, capital and ideas building the city.
-        </p>
-        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-          Demo build featuring sample editorial content
-        </p>
+  <footer data-testid="site-footer" className="mt-auto border-t hairline bg-bg overflow-hidden">
+    <div className="wrap pt-14 pb-8">
+      <div className="grid gap-12 md:grid-cols-12">
+        <div className="md:col-span-5">
+          <Link to="/" data-testid="footer-logo"><Logo /></Link>
+          <p className="mt-5 max-w-sm text-[0.92rem] leading-relaxed text-muted">
+            Independent reporting on the startups, capital and technology shaping Dubai and the UAE.
+          </p>
+          <a
+            href="mailto:desk@dubaistartupsdaily.ae"
+            data-testid="footer-contact"
+            className="group mt-6 inline-flex items-center gap-1.5 text-[0.95rem] font-semibold text-ink"
+          >
+            desk@dubaistartupsdaily.ae
+            <ArrowUpRight size={16} className="text-acc transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+        </div>
+
+        <nav data-testid="footer-sections" aria-label="Sections" className="md:col-span-4">
+          <p className="eyebrow">Sections</p>
+          <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5">
+            {CATEGORIES.map((c) => (
+              <li key={c.slug}>
+                <Link to={`/category/${c.slug}`} data-testid={`footer-category-${c.slug}`} className={linkCls}>
+                  {c.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav data-testid="footer-company" aria-label="Newsroom" className="md:col-span-3">
+          <p className="eyebrow">Newsroom</p>
+          <ul className="mt-4 space-y-2.5">
+            <li><Link to="/about" data-testid="footer-about" className={linkCls}>About us</Link></li>
+            <li><Link to="/search" data-testid="footer-search" className={linkCls}>Search the archive</Link></li>
+            <li><a href="mailto:desk@dubaistartupsdaily.ae?subject=Tip" className={linkCls}>Send a tip</a></li>
+            <li><Link to="/" data-testid="footer-home" className={linkCls}>Home</Link></li>
+          </ul>
+        </nav>
       </div>
 
-      <nav data-testid="footer-sections">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-gold pb-3 border-b border-white/15">
-          Sections
-        </h3>
-        <ul className="mt-4 space-y-2.5">
-          {CATEGORIES.map((c) => (
-            <li key={c.slug}>
-              <Link
-                to={`/category/${c.slug}`}
-                data-testid={`footer-category-${c.slug}`}
-                className="text-sm text-white/75 hover:text-gold transition-colors duration-200 inline-flex items-center gap-1"
-              >
-                {c.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <p
+        aria-hidden="true"
+        className="display mt-16 select-none text-center text-[19vw] lg:text-[15.5rem] leading-[0.8] tracking-[-0.06em] text-ink/[0.07]"
+      >
+        DUBAI·DAILY
+      </p>
 
-      <nav data-testid="footer-company">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-gold pb-3 border-b border-white/15">
-          Company
-        </h3>
-        <ul className="mt-4 space-y-2.5">
-          <li>
-            <Link to="/about" data-testid="footer-about" className="text-sm text-white/75 hover:text-gold transition-colors duration-200">
-              About & Mission
-            </Link>
-          </li>
-          <li>
-            <Link to="/search" data-testid="footer-search" className="text-sm text-white/75 hover:text-gold transition-colors duration-200">
-              Search the Archive
-            </Link>
-          </li>
-          <li>
-            <Link to="/" data-testid="footer-home" className="text-sm text-white/75 hover:text-gold transition-colors duration-200">
-              Front Page
-            </Link>
-          </li>
-        </ul>
-        <a
-          href="mailto:desk@dubaistartupsdaily.ae"
-          data-testid="footer-contact"
-          className="mt-6 inline-flex items-center gap-1.5 border border-gold/50 px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-gold hover:bg-gold hover:text-ink transition-colors duration-200"
-        >
-          Contact the desk <ArrowUpRight size={13} />
-        </a>
-      </nav>
-    </div>
-
-    <div className="border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
-          © 2026 Dubai Startups Daily
-        </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
-          Made in Dubai, for the builders of the Gulf
-        </span>
+      <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t hairline pt-6 text-[0.78rem] text-muted">
+        <p>© 2026 Dubai Startups Daily · Demo build with sample reporting</p>
+        <p className="flex gap-5">
+          <Link to="/about" className="hover:text-ink transition-colors">Privacy</Link>
+          <Link to="/about" className="hover:text-ink transition-colors">Terms</Link>
+          <Link to="/about" className="hover:text-ink transition-colors">Corrections</Link>
+        </p>
       </div>
     </div>
   </footer>

@@ -4,14 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k -n web,cms -c green,yellow \"vite\" \"node --watch server/index.js\"",
+    "dev:web": "vite",
+    "dev:cms": "node --watch server/index.js",
     "build": "vite build",
+    "start": "node server/index.js",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.108.2",
     "canvas-confetti": "^1.9.4",
+    "express": "^4.21.2",
     "lucide-react": "^1.77.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -22,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.7.0",
+    "concurrently": "^9.1.2",
     "oxlint": "^1.90.0",
     "postcss": "^8.5.33",
     "tailwindcss": "^3.4.17",

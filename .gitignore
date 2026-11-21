@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# CMS content and uploads (runtime data)
+server/data/

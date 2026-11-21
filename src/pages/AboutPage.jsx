@@ -1,87 +1,105 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Landmark, Newspaper, TrendingUp, Cpu, Users, LineChart } from "lucide-react";
-import { CATEGORIES } from "@/data/articles";
+import { ArrowUpRight } from "lucide-react";
+import { CATEGORIES, ARTICLES, byCategory, initials } from "@/data/articles";
+import Reveal from "@/components/Reveal";
 
-const icons = {
-  "startup-news": Newspaper,
-  "funding-investment": Landmark,
-  "business-news": TrendingUp,
-  "technology-ai": Cpu,
-  "founder-stories": Users,
-  "insights-analysis": LineChart,
-};
+const PRINCIPLES = [
+  {
+    title: "Sources, named or explained",
+    body: "Funding figures are confirmed with the company or two people familiar with the deal. When we can’t name a source, we say how they know.",
+  },
+  {
+    title: "Sponsored work is labelled",
+    body: "Partners never see a story before it runs. Commercial content carries a clear label at the top of the page.",
+  },
+  {
+    title: "Corrections in public",
+    body: "Mistakes are fixed in the story with a dated note explaining what changed. Spot one? Write to the desk.",
+  },
+];
 
-const AboutPage = () => (
-  <div data-testid="about-page" className="bg-ivory dark:bg-navy-950 transition-colors duration-200">
-    <section className="bg-ink dark:bg-navy-900 text-white">
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold">Our mission</span>
-        <h1 className="font-headline font-black text-4xl sm:text-6xl leading-[1.05] mt-4 max-w-3xl text-white" data-testid="about-headline">
-          A trusted digital destination for Dubai’s startup, business and technology news.
+const AboutPage = () => {
+  const authors = [...new Map(ARTICLES.map((a) => [a.author, a.authorRole])).entries()];
+
+  return (
+    <div data-testid="about-page" className="pb-24">
+      <section className="wrap pt-12 sm:pt-20">
+        <p className="eyebrow rise">About the newsroom</p>
+        <h1
+          className="display mt-4 max-w-[17ch] text-[2.8rem] sm:text-[4.6rem] lg:text-[6rem] leading-[0.92] tracking-[-0.04em] rise rise-1"
+          data-testid="about-headline"
+        >
+          We cover the people and money building Dubai’s next companies<span className="text-acc">.</span>
         </h1>
-        <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70">
-          Dubai Startups Daily exists to document the companies, capital and ideas building this city — with the
-          rigour of a business daily and the pacing of the ecosystem we cover.
-        </p>
-      </div>
-    </section>
+        <div className="mt-10 grid lg:grid-cols-12 rise rise-2">
+          <p className="lg:col-span-6 lg:col-start-7 text-[1.15rem] leading-[1.65] text-body">
+            Dubai Startups Daily reports on founders, venture capital, the economy and technology across the UAE, with
+            the standards of a business desk and the pace of the ecosystem we cover.
+          </p>
+        </div>
+      </section>
 
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      <div className="border-t-[3px] border-ink dark:border-white/20 pt-5">
-        <h2 className="font-headline font-black text-3xl text-ink dark:text-white">What we cover</h2>
-      </div>
-      <div className="mt-9 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {CATEGORIES.map((c) => {
-          const Icon = icons[c.slug] || Newspaper;
-          return (
-            <Link
-              key={c.slug}
-              to={`/category/${c.slug}`}
-              data-testid={`about-section-${c.slug}`}
-              className="group border border-neutral-200 dark:border-white/10 hover:border-gold dark:hover:border-gold bg-white dark:bg-navy-900 p-7 transition-colors duration-300"
-            >
-              <span className="w-10 h-10 flex items-center justify-center bg-ink dark:bg-navy-800 text-gold group-hover:bg-gold group-hover:text-ink transition-colors duration-300">
-                <Icon size={18} strokeWidth={2.2} />
-              </span>
-              <h3 className="font-headline font-bold text-xl mt-5 text-ink dark:text-white group-hover:text-gold transition-colors duration-300">
-                {c.name}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-slate-300">{c.description}</p>
-            </Link>
-          );
-        })}
-      </div>
-    </section>
+      <section className="wrap mt-20 grid gap-4 md:grid-cols-3">
+        {PRINCIPLES.map((p, i) => (
+          <Reveal key={p.title} delay={i * 90} className={`rounded-tile p-7 sm:p-8 ${i === 0 ? "bg-lime text-onlime" : "bg-surface ring-1 ring-line/10"}`}>
+            <span className={`font-mono text-[0.75rem] ${i === 0 ? "text-onlime/70" : "text-muted"}`}>0{i + 1}</span>
+            <h2 className={`mt-10 font-display text-[1.6rem] font-bold leading-[1.02] tracking-[-0.03em] ${i === 0 ? "text-onlime" : "text-ink"}`}>
+              {p.title}
+            </h2>
+            <p className={`mt-3 text-[0.95rem] leading-relaxed ${i === 0 ? "text-onlime/80" : "text-muted"}`}>{p.body}</p>
+          </Reveal>
+        ))}
+      </section>
 
-    <section className="bg-mist dark:bg-navy-900/40 border-t border-neutral-200 dark:border-white/10 py-16">
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-10">
-        <div>
-          <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-gold">Independence</h3>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-slate-300">
-            Our newsroom operates with strict editorial independence. Sponsored content and partners are always
-            clearly labelled.
-          </p>
+      <section className="wrap mt-24 grid gap-14 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <h2 className="display text-[2.2rem] sm:text-[2.8rem]">What we cover</h2>
+          <ul className="mt-6 border-t hairline">
+            {CATEGORIES.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  to={`/category/${c.slug}`}
+                  data-testid={`about-section-${c.slug}`}
+                  className="group grid grid-cols-[1fr_auto] items-center gap-4 border-b hairline py-5"
+                >
+                  <span>
+                    <span className="flex items-baseline gap-3">
+                      <span className="font-display text-[1.45rem] font-bold tracking-[-0.03em] text-ink">{c.name}</span>
+                      <span className="meta">{byCategory(c.slug).length}</span>
+                    </span>
+                    <span className="mt-1 block text-[0.92rem] text-muted">{c.description}</span>
+                  </span>
+                  <span className="grid h-10 w-10 place-items-center rounded-full ring-1 ring-line/15 text-ink transition-colors duration-200 group-hover:bg-lime group-hover:text-onlime group-hover:ring-transparent">
+                    <ArrowUpRight size={17} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div>
-          <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-gold">Local focus</h3>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-slate-300">
-            Based in Dubai, reporting from the ground across DIFC, DWTC, Area 2071, Hub71 and the broader UAE
-            innovation theatre.
-          </p>
+
+        <div className="lg:col-span-4 lg:col-start-9">
+          <h2 className="display text-[2.2rem] sm:text-[2.8rem]">The desk</h2>
+          <ul className="mt-6 space-y-2">
+            {authors.map(([name, role]) => (
+              <li key={name} className="flex items-center gap-3 rounded-card bg-surface p-3 ring-1 ring-line/10">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-raised font-display text-[0.85rem] font-bold text-ink">
+                  {initials(name)}
+                </span>
+                <span>
+                  <span className="block text-[0.93rem] font-semibold text-ink">{name}</span>
+                  <span className="block text-[0.82rem] text-muted">{role}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <a href="mailto:desk@dubaistartupsdaily.ae" className="btn-lime mt-6 w-full">
+            Pitch the desk
+          </a>
         </div>
-        <div>
-          <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-gold">The desk</h3>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-slate-300">
-            Pitch stories, share embargoed funding rounds or correct reporting directly at{" "}
-            <a href="mailto:desk@dubaistartupsdaily.ae" className="text-tech dark:text-sky-400 underline">
-              desk@dubaistartupsdaily.ae
-            </a>
-            .
-          </p>
-        </div>
-      </div>
-    </section>
-  </div>
-);
+      </section>
+    </div>
+  );
+};
 
 export default AboutPage;

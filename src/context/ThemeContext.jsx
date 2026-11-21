@@ -1,25 +1,20 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const ThemeContext = createContext();
 
+// Dark is the house style; light is opt-in and remembered.
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
-      const saved = localStorage.getItem("dsd_theme");
-      if (saved === "dark" || saved === "light") return saved;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      return localStorage.getItem("dsd_theme") === "light" ? "light" : "dark";
     } catch {
-      return "light";
+      return "dark";
     }
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#0C0D0B" : "#F0EFE8");
     try {
       localStorage.setItem("dsd_theme", theme);
     } catch {
@@ -27,9 +22,7 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
     <ThemeContext.Provider value={{ theme, isDark: theme === "dark", toggleTheme }}>

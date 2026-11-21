@@ -1,47 +1,51 @@
 /** @type {import('tailwindcss').Config} */
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  darkMode: 'class',
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        ink: '#0B1726',       // Deep Royal Navy
-        navy: {
-          DEFAULT: '#0B1726',
-          50: '#F4F7FB',
-          100: '#E6EDF5',
-          200: '#C7D7E8',
-          700: '#1C324E',
-          800: '#13243A',
-          850: '#0E1B2C',
-          900: '#0A1320',
-          950: '#060C14',
-        },
-        gold: '#D4AF37',      // Lustrous Champagne Gold
-        golddark: '#B89025',  // Burnished Antique Gold
-        goldlight: '#F5E6BE', // Warm Champagne Highlight
-        mist: '#F1F4F8',      // Soft Architectural Slate-Mist
-        ivory: '#FAF9F5',     // Warm Editorial Ivory
-        tech: '#1D4ED8',      // Deep Cobalt Blue
+        bg: token("bg"),
+        surface: token("surface"),
+        raised: token("raised"),
+        ink: token("ink"),
+        body: token("body"),
+        muted: token("muted"),
+        line: token("line"),
+        lime: token("lime"),
+        onlime: token("onlime"),
+        acc: token("acc"),
       },
       fontFamily: {
-        headline: ['"Playfair Display"', 'Georgia', 'serif'],
-        body: ['Archivo', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        display: ['"Bricolage Grotesque"', "system-ui", "sans-serif"],
+        sans: ['"Geist"', "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"Geist Mono"', "ui-monospace", "monospace"],
       },
-      animation: {
-        'ticker': 'ticker-scroll 55s linear infinite',
+      maxWidth: {
+        page: "90rem",
+        read: "42rem",
+      },
+      borderRadius: {
+        tile: "1.25rem",
+        card: "0.875rem",
+      },
+      zIndex: {
+        header: "40",
+        overlay: "50",
+        skip: "60",
       },
       keyframes: {
-        'ticker-scroll': {
-          'from': { transform: 'translateX(0)' },
-          'to': { transform: 'translateX(-50%)' },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
         },
+      },
+      animation: {
+        marquee: "marquee 45s linear infinite",
       },
     },
   },
   plugins: [],
-}
+};

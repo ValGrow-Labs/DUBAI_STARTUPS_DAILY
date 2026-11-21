@@ -1,46 +1,31 @@
 import { Link } from "react-router-dom";
-import { Flame } from "lucide-react";
 import { trendingArticles } from "@/data/articles";
 
-export const MostRead = () => {
-  const list = trendingArticles(5);
+export const MostRead = ({ count = 5, className = "" }) => {
+  const list = trendingArticles(count);
   return (
-    <aside data-testid="most-read-list" className="bg-ink dark:bg-navy-900 text-white p-7 border dark:border-white/10 shadow-sm transition-colors duration-200">
-      <div className="flex items-center gap-2 border-b border-white/15 pb-4">
-        <Flame size={16} className="text-gold" strokeWidth={2.4} />
-        <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.2em]">Most Read</h3>
+    <aside data-testid="most-read-list" className={`rounded-tile bg-surface p-6 ring-1 ring-line/10 ${className}`} aria-labelledby="most-read-heading">
+      <div className="flex items-center justify-between">
+        <h2 id="most-read-heading" className="display text-[1.4rem]">Most read</h2>
+        <span className="eyebrow">This week</span>
       </div>
-      <ol className="mt-2">
+      <ol className="mt-3">
         {list.map((a, i) => (
-          <li key={a.slug} data-testid={`most-read-item-${i + 1}`} className="group border-b border-white/10 last:border-0">
-            <Link to={`/article/${a.slug}`} className="flex gap-4 py-4">
-              <span className="font-headline italic font-bold text-2xl text-gold leading-none w-8 shrink-0">
-                {String(i + 1).padStart(2, "0")}
+          <li key={a.slug} data-testid={`most-read-item-${i + 1}`} className="group border-t hairline first:border-0">
+            <Link to={`/article/${a.slug}`} className="grid grid-cols-[2.25rem_1fr] gap-3 py-4">
+              <span className="display text-[1.9rem] leading-[0.85] text-ink/20 transition-colors duration-300 group-hover:text-acc tabular-nums">
+                {i + 1}
               </span>
-              <div>
-                <h4 className="font-headline font-bold text-[15px] leading-snug text-white group-hover:text-gold transition-colors duration-300">
-                  {a.title}
-                </h4>
-                <span className="mt-1.5 inline-block font-mono text-[10px] uppercase tracking-wider text-white/50">
-                  {a.author}
+              <span>
+                <span className="block font-display text-[1.02rem] font-semibold leading-[1.18] tracking-[-0.02em] text-ink">
+                  <span className="title-link">{a.title}</span>
                 </span>
-              </div>
+                <span className="meta mt-1.5 block">{a.readTime} min read</span>
+              </span>
             </Link>
           </li>
         ))}
       </ol>
-      <div className="mt-6 border border-gold/40 dark:border-gold/30 p-5 bg-transparent dark:bg-navy-950/40">
-        <p className="font-headline font-bold text-lg leading-snug text-white">
-          Dubai Startups Daily covers the people, capital and technology building the city.
-        </p>
-        <Link
-          to="/about"
-          data-testid="most-read-about-link"
-          className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-gold hover:text-white transition-colors duration-200"
-        >
-          Our mission
-        </Link>
-      </div>
     </aside>
   );
 };

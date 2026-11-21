@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { ThemeProvider } from "@/context/ThemeContext";
+import ContentProvider from "@/context/ContentContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -10,18 +13,56 @@ import SearchPage from "@/pages/SearchPage";
 import AboutPage from "@/pages/AboutPage";
 
 const NotFound = () => (
-  <div className="max-w-3xl mx-auto px-6 py-24 text-center" data-testid="not-found-page">
-    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-gold dark:text-goldlight">Error 404</p>
-    <h1 className="font-headline font-black text-5xl mt-3 text-ink dark:text-white">Page not found</h1>
-    <p className="mt-4 text-slate-600 dark:text-slate-400">The story you are looking for has moved, or never made print.</p>
-    <Link
-      to="/"
-      data-testid="not-found-home-link"
-      className="mt-8 inline-flex items-center gap-2 border border-ink dark:border-white/20 px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink dark:text-white hover:bg-ink hover:text-gold dark:hover:bg-gold dark:hover:text-ink transition-colors duration-200"
+  <div className="wrap py-24 sm:py-32" data-testid="not-found-page">
+    <p
+      aria-hidden="true"
+      className="font-display text-[8rem] sm:text-[13rem] font-extrabold leading-[0.8] tracking-[-0.07em] text-lime"
+      style={{ fontVariationSettings: '"opsz" 40' }}
     >
-      Back to the front page
-    </Link>
+      404
+    </p>
+    <h1 className="display mt-6 max-w-[18ch] text-[2.4rem] sm:text-[3.6rem] leading-[0.95]">This page didn’t make the cut.</h1>
+    <p className="mt-4 max-w-[30rem] text-[1rem] leading-relaxed text-muted">
+      The link may be broken or the story may have moved. Today’s reporting is on the home page.
+    </p>
+    <div className="mt-8 flex flex-wrap gap-3">
+      <Link to="/" data-testid="not-found-home-link" className="btn-lime">
+        <ArrowLeft size={16} /> Back home
+      </Link>
+      <Link to="/search" className="btn-ghost">Search the archive</Link>
+    </div>
   </div>
+);
+
+// Re-mounts on path change so each page plays its entrance.
+const AnimatedRoutes = () => {
+  const { pathname } = useLocation();
+  return (
+    <div key={pathname} className="page-in">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/article/:slug" element={<ArticlePage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+  );
+};
+
+const AdminApp = lazy(() => import("@/admin/AdminApp"));
+
+const Site = () => (
+  <ContentProvider>
+    <div className="grain flex min-h-[100dvh] flex-col bg-bg text-body">
+      <Header />
+      <main id="main" className="flex-1">
+        <AnimatedRoutes />
+      </main>
+      <Footer />
+    </div>
+  </ContentProvider>
 );
 
 function App() {
@@ -29,20 +70,17 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <ScrollToTop />
-        <div className="min-h-screen bg-ivory dark:bg-navy-950 text-ink dark:text-slate-100 font-body flex flex-col selection:bg-gold selection:text-ink transition-colors duration-250">
-          <Header />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/category/:slug" element={<CategoryPage />} />
-              <Route path="/article/:slug" element={<ArticlePage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <Routes>
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense fallback={<div className="min-h-[100dvh] bg-bg" />}>
+                <AdminApp />
+              </Suspense>
+            }
+          />
+          <Route path="*" element={<Site />} />
+        </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );

@@ -1,42 +1,64 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search as SearchIcon, X } from "lucide-react";
 import { searchArticles, trendingArticles, formatDate } from "@/data/articles";
 import CategoryTag from "@/components/CategoryTag";
+import { StoryCard } from "@/components/ArticleCard";
+
+const SUGGESTED = ["Series B", "AI", "DIFC", "Fintech", "Logistics", "Real estate", "Climate"];
+
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const Highlight = ({ text, q }) => {
+  const terms = q.trim().split(/\s+/).filter(Boolean).map(esc);
+  if (!terms.length) return text;
+  const parts = text.split(new RegExp(`\\b(${terms.join("|")})`, "gi"));
+  return parts.map((p, i) =>
+    i % 2 === 1 ? (
+      <mark key={i} className="rounded-[3px] bg-lime px-0.5 text-onlime">{p}</mark>
+    ) : (
+      p
+    )
+  );
+};
 
 const SearchPage = () => {
   const [params, setParams] = useSearchParams();
   const q = params.get("q") || "";
   const [input, setInput] = useState(q);
-
-  useEffect(() => {
+  const [lastQ, setLastQ] = useState(q);
+  if (q !== lastQ) {
+    setLastQ(q);
     setInput(q);
-  }, [q]);
+  }
 
   const results = searchArticles(q);
-  const suggestions = trendingArticles(5);
+  const suggestions = trendingArticles(3);
 
   return (
-    <div data-testid="search-page" className="bg-mist dark:bg-navy-950 min-h-[70vh] transition-colors duration-200">
-      <div className="max-w-5xl mx-auto px-6 py-14">
-        <h1 className="font-headline font-black text-4xl sm:text-5xl text-ink dark:text-white">Search the archive</h1>
+    <div data-testid="search-page" className="min-h-[70vh] pb-24">
+      <div className="wrap pt-12 sm:pt-16">
+        <p className="eyebrow">Archive</p>
+        <h1 className="display mt-2 text-[2.8rem] sm:text-[4.5rem] leading-[0.9]">Search</h1>
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setParams(input.trim() ? { q: input.trim() } : {});
           }}
-          className="mt-8 flex gap-3"
+          className="mt-8 max-w-4xl"
           data-testid="search-form"
+          role="search"
         >
-          <div className="relative flex-1">
-            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-slate-500" />
+          <div className="flex items-center gap-2 rounded-full bg-surface p-2 pl-5 ring-1 ring-line/10 focus-within:ring-2 focus-within:ring-ink transition-shadow">
+            <SearchIcon size={20} className="shrink-0 text-muted" />
             <input
               data-testid="search-page-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Try “funding”, “AI”, “founder”, “rent”…"
-              className="w-full bg-white dark:bg-navy-850 border border-neutral-300 dark:border-white/15 focus:border-gold outline-none pl-11 pr-10 py-3.5 text-[15px] text-ink dark:text-white placeholder:text-neutral-400 dark:placeholder:text-slate-500 transition-colors duration-200"
+              placeholder="Companies, founders, topics"
+              aria-label="Search terms"
+              className="min-w-0 flex-1 bg-transparent px-1 py-2.5 font-display text-[1.2rem] sm:text-[1.4rem] font-semibold tracking-[-0.02em] text-ink placeholder:text-muted/70 outline-none"
             />
             {input && (
               <button
@@ -47,85 +69,75 @@ const SearchPage = () => {
                 }}
                 aria-label="Clear search"
                 data-testid="search-clear-button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-slate-400 hover:text-ink dark:hover:text-white transition-colors duration-200"
+                className="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-raised hover:text-ink transition-colors"
               >
-                <X size={16} />
+                <X size={17} />
               </button>
             )}
+            <button type="submit" data-testid="search-page-submit" className="btn-lime">
+              Search
+            </button>
           </div>
-          <button
-            type="submit"
-            data-testid="search-page-submit"
-            className="bg-ink dark:bg-gold text-white dark:text-ink font-mono text-[11px] font-semibold uppercase tracking-[0.14em] px-6 py-3.5 hover:bg-gold hover:text-ink dark:hover:bg-white transition-colors duration-200"
-          >
-            Search
-          </button>
         </form>
 
-        {/* Results */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {SUGGESTED.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setParams({ q: s })}
+              className={`chip-ghost py-1 hover:bg-ink hover:text-bg transition-colors ${q.toLowerCase() === s.toLowerCase() ? "!bg-ink !text-bg" : ""}`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
         {q ? (
-          <div className="mt-12" data-testid="search-results-section">
-            <div className="flex items-baseline justify-between border-b border-neutral-300 dark:border-white/10 pb-3">
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-600 dark:text-slate-400">
-                Found <span className="text-gold font-bold">{results.length}</span> {results.length === 1 ? "story" : "stories"} for “{q}”
-              </p>
-              {!!results.length && (
-                <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400 dark:text-slate-500 hidden sm:inline">
-                  Sorted by relevance
-                </span>
-              )}
-            </div>
+          <div className="mt-14 max-w-5xl" data-testid="search-results-section">
+            <p className="text-[0.95rem] text-muted" aria-live="polite">
+              <span className="display text-[1.4rem] tabular-nums">{results.length}</span>{" "}
+              {results.length === 1 ? "result" : "results"} for “{q}”
+            </p>
 
             {!results.length ? (
-              <div className="py-16 text-center" data-testid="search-no-results">
-                <p className="font-headline text-2xl text-neutral-700 dark:text-slate-300">No stories matched your search.</p>
-                <p className="mt-2 text-sm text-neutral-500 dark:text-slate-400">
-                  Try broader terms like “AI”, “funding”, “DIFC” or browse the sections above.
-                </p>
+              <div className="mt-6 rounded-tile bg-surface p-10 ring-1 ring-line/10" data-testid="search-no-results">
+                <p className="display text-[1.6rem]">Nothing matched “{q}”.</p>
+                <p className="mt-2 text-muted">Check the spelling, use fewer words, or try one of the topics above.</p>
               </div>
             ) : (
-              <ul className="divide-y divide-neutral-200 dark:divide-white/10 mt-2">
+              <ol className="mt-4 border-t hairline">
                 {results.map((a) => (
-                  <li key={a.slug} className="py-6">
-                    <CategoryTag slug={a.category} className="mb-2" />
-                    <Link to={`/article/${a.slug}`}>
-                      <h2 className="font-headline font-bold text-2xl leading-snug text-ink dark:text-white hover:text-gold transition-colors duration-200">
-                        {a.title}
+                  <li key={a.slug} className="group relative grid gap-5 border-b hairline py-7 sm:grid-cols-[1fr_10rem]">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <CategoryTag slug={a.category} />
+                        <span className="meta">{formatDate(a.date)}</span>
+                      </div>
+                      <h2 className="mt-3 font-display text-[1.45rem] sm:text-[1.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ink">
+                        <Link to={`/article/${a.slug}`} className="after:absolute after:inset-0">
+                          <Highlight text={a.title} q={q} />
+                        </Link>
                       </h2>
-                    </Link>
-                    <p className="mt-2 text-[15px] leading-relaxed text-neutral-600 dark:text-slate-300 max-w-3xl">{a.dek}</p>
-                    <div className="mt-3 font-mono text-[11px] uppercase tracking-wider text-neutral-500 dark:text-slate-400 flex items-center gap-2">
-                      <span>{a.author}</span>
-                      <span>·</span>
-                      <span>{formatDate(a.date)}</span>
-                      <span>·</span>
-                      <span>{a.readTime} min read</span>
+                      <p className="mt-2.5 max-w-[44rem] text-[0.95rem] leading-relaxed text-muted">
+                        <Highlight text={a.dek} q={q} />
+                      </p>
+                      <p className="meta mt-3">{a.author} · {a.readTime} min read</p>
+                    </div>
+                    <div className="hidden sm:block tile aspect-[4/3] !rounded-card">
+                      <img src={a.image} alt="" loading="lazy" />
                     </div>
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
           </div>
         ) : (
-          <div className="mt-14" data-testid="search-suggestions">
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-neutral-500 dark:text-slate-400 mb-4">
-              Trending stories right now
-            </p>
-            <div className="grid sm:grid-cols-2 gap-4">
+          <div className="mt-16" data-testid="search-suggestions">
+            <h2 className="display text-[1.8rem]">Most read this week</h2>
+            <div className="mt-6 grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {suggestions.map((a) => (
-                <Link
-                  key={a.slug}
-                  to={`/article/${a.slug}`}
-                  className="p-5 bg-white dark:bg-navy-900 border border-neutral-200 dark:border-white/10 hover:border-gold dark:hover:border-gold transition-colors duration-200 block"
-                >
-                  <CategoryTag slug={a.category} className="mb-2" />
-                  <h3 className="font-headline font-bold text-lg text-ink dark:text-white hover:text-gold leading-snug">
-                    {a.title}
-                  </h3>
-                  <span className="mt-2 inline-block font-mono text-[10px] uppercase text-neutral-400 dark:text-slate-400">
-                    {a.author} · {a.readTime} min
-                  </span>
-                </Link>
+                <StoryCard key={a.slug} article={a} aspect="aspect-[3/2]" />
               ))}
             </div>
           </div>
