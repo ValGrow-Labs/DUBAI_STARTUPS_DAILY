@@ -22,7 +22,7 @@ const Briefing = ({ variant = "band" }) => {
         <span className={`grid h-7 w-7 place-items-center rounded-full ${onLime ? "bg-onlime text-lime" : "bg-lime text-onlime"}`}>
           <Check size={15} strokeWidth={2.5} />
         </span>
-        You’re in. The first briefing lands at 7am Gulf time.
+        You’re in. The first briefing lands at 7am Dubai time.
       </p>
     ) : (
       <form onSubmit={submit} noValidate>
@@ -61,7 +61,7 @@ const Briefing = ({ variant = "band" }) => {
     return (
       <div className="rounded-tile bg-surface p-6 sm:p-8 ring-1 ring-line/10">
         <p className="eyebrow">Weekdays · 7am</p>
-        <p className="display mt-2 text-[1.7rem] leading-[1.02]">Every UAE deal, before your first coffee.</p>
+        <p className="display mt-2 text-[1.7rem] leading-[1.02]">Every Dubai deal, before your first coffee.</p>
         <p className="mt-2 mb-5 text-[0.93rem] leading-relaxed text-muted">
           The Morning Briefing: disclosed funding rounds plus the three stories worth your time.
         </p>
@@ -88,7 +88,7 @@ const Briefing = ({ variant = "band" }) => {
           </div>
           <div className="lg:col-span-5">
             <p className="mb-5 max-w-md text-[1rem] leading-relaxed text-onlime/80">
-              Every disclosed funding round in the UAE, plus the reporting that explains it. Five minutes, weekdays.
+              Every disclosed funding round in Dubai, plus the reporting that explains it. Five minutes, weekdays.
             </p>
             {form}
           </div>

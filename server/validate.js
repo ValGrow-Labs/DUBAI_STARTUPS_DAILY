@@ -24,6 +24,23 @@ export function validateArticle(input = {}) {
     tags: Array.isArray(input.tags) ? input.tags.map(str).filter(Boolean).slice(0, 12) : [],
     featured: Boolean(input.featured),
     trending: Boolean(input.trending),
+    // SEO fields
+    seoTitle: str(input.seoTitle) || str(input.title),
+    metaDescription: str(input.metaDescription) || str(input.dek),
+    focusKeyword: str(input.focusKeyword),
+    secondaryKeywords: Array.isArray(input.secondaryKeywords)
+      ? input.secondaryKeywords.map(str).filter(Boolean).slice(0, 8)
+      : typeof input.secondaryKeywords === "string"
+      ? input.secondaryKeywords.split(",").map(str).filter(Boolean).slice(0, 8)
+      : [],
+    canonicalUrl: str(input.canonicalUrl),
+    ogTitle: str(input.ogTitle),
+    ogDescription: str(input.ogDescription),
+    ogImage: str(input.ogImage),
+    imageAlt: str(input.imageAlt) || str(input.imageCaption) || str(input.title),
+    robotsIndex: input.robotsIndex === undefined ? true : Boolean(input.robotsIndex),
+    robotsFollow: input.robotsFollow === undefined ? true : Boolean(input.robotsFollow),
+    modifiedDate: str(input.modifiedDate) || new Date().toISOString(),
     blocks: Array.isArray(input.blocks)
       ? input.blocks
           .map((b) => ({ t: BLOCK_TYPES.has(b?.t) ? b.t : "p", x: str(b?.x) }))

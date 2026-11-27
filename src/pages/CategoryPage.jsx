@@ -1,25 +1,30 @@
-import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { CATEGORIES, getCategory, byCategory } from "@/data/articles";
 import { StoryOverlay, StoryCard } from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
+import SEO from "@/components/SEO";
+import Breadcrumb from "@/components/Breadcrumb";
+import { getCollectionSchema, getBreadcrumbSchema, buildCanonical } from "@/lib/seo";
+
+const CATEGORY_KEYWORDS = {
+  "startup-news": ["Dubai startup news", "UAE startup news", "Dubai business news"],
+  "funding-investment": ["Dubai startup funding", "UAE venture capital", "Dubai angel investors", "UAE startup investments"],
+  "business-news": ["Dubai business news", "UAE economy", "Dubai market trends"],
+  "technology-ai": ["Dubai AI startups", "Dubai fintech startups", "UAE technology startups"],
+  "founder-stories": ["Dubai startup founders", "Dubai entrepreneurs", "UAE founder stories"],
+  "insights-analysis": ["Dubai startup analysis", "UAE venture capital reports", "Dubai market research"],
+};
 
 const CategoryPage = () => {
   const { slug } = useParams();
   const cat = getCategory(slug);
   const arts = byCategory(slug);
 
-  useEffect(() => {
-    document.title = cat ? `${cat.name} · Dubai Startups Daily` : "Dubai Startups Daily";
-    return () => {
-      document.title = "Dubai Startups Daily";
-    };
-  }, [cat]);
-
   if (!cat) {
     return (
       <div className="wrap py-28" data-testid="category-not-found">
+        <SEO title="Section Not Found" noindex />
         <p className="eyebrow">Not found</p>
         <h1 className="display mt-3 text-[2.8rem] sm:text-[4rem] leading-[0.95]">That section doesn’t exist.</h1>
         <Link to="/" className="btn-lime mt-8">
@@ -29,16 +34,28 @@ const CategoryPage = () => {
     );
   }
 
+  const pageUrl = buildCanonical(`/category/${cat.slug}`);
+  const breadcrumbItems = [{ name: cat.name, path: `/category/${cat.slug}` }];
+  const keywords = CATEGORY_KEYWORDS[cat.slug] || ["Dubai startups", cat.name];
+
+  const schemas = [
+    getCollectionSchema(cat, pageUrl, arts),
+    getBreadcrumbSchema(breadcrumbItems),
+  ].filter(Boolean);
+
   const [first, ...rest] = arts;
 
   return (
     <div data-testid="category-page" className="pb-24">
+      <SEO
+        title={`${cat.name} News & Stories`}
+        description={cat.description}
+        canonical={pageUrl}
+        keywords={keywords}
+        schema={schemas}
+      />
       <section className="wrap pt-10 sm:pt-14">
-        <nav className="flex items-center gap-2 text-[0.82rem] text-muted" data-testid="category-breadcrumb" aria-label="Breadcrumb">
-          <Link to="/" className="hover:text-ink transition-colors">Home</Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-ink">{cat.name}</span>
-        </nav>
+        <Breadcrumb items={breadcrumbItems} className="mb-4" />
 
         <div className="mt-6 flex flex-wrap items-end justify-between gap-6">
           <h1

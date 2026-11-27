@@ -11,6 +11,9 @@ import CategoryPage from "@/pages/CategoryPage";
 import ArticlePage from "@/pages/ArticlePage";
 import SearchPage from "@/pages/SearchPage";
 import AboutPage from "@/pages/AboutPage";
+import SetupPage from "@/pages/SetupPage";
+import EventsPage from "@/pages/EventsPage";
+import JobsPage from "@/pages/JobsPage";
 
 const NotFound = () => (
   <div className="wrap py-24 sm:py-32" data-testid="not-found-page">
@@ -43,6 +46,10 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/article/:slug" element={<ArticlePage />} />
+        <Route path="/setup" element={<SetupPage />} />
+        <Route path="/guides" element={<SetupPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/jobs" element={<JobsPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<NotFound />} />

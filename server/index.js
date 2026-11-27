@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import * as store from "./store.js";
 import { validateArticle } from "./validate.js";
 import { checkPassword, issueToken, requireAuth, loginLimiter, verifyToken, usingDefaultPassword } from "./auth.js";
+import { generateSitemapXml, generateNewsSitemapXml, injectPrerenderedHtml } from "./seo.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 8787;
@@ -89,10 +90,58 @@ app.post("/api/uploads", requireAuth, (req, res) => {
 
 app.use("/uploads", express.static(UPLOAD_DIR, { maxAge: "30d", immutable: true }));
 
-/* ---------- Built site (production) ---------- */
+/* ---------- Technical SEO & Sitemaps ---------- */
+app.get("/robots.txt", (_req, res) => {
+  res.set("Content-Type", "text/plain; charset=utf-8");
+  res.send(`User-agent: *
+Allow: /
+Allow: /article/
+Allow: /category/
+Allow: /setup
+Allow: /events
+Allow: /jobs
+Allow: /about
+Disallow: /admin/
+Disallow: /api/
+Disallow: /search
+
+Sitemap: https://dubaistartupsdaily.ae/sitemap.xml
+Sitemap: https://dubaistartupsdaily.ae/sitemap-news.xml
+`);
+});
+
+app.get("/sitemap.xml", (_req, res) => {
+  res.set("Content-Type", "application/xml; charset=utf-8");
+  res.send(generateSitemapXml(store.list()));
+});
+
+app.get("/sitemap-news.xml", (_req, res) => {
+  res.set("Content-Type", "application/xml; charset=utf-8");
+  res.send(generateNewsSitemapXml(store.list()));
+});
+
+/* ---------- Built site with Dynamic Server-Side SEO Prerender ---------- */
 if (fs.existsSync(DIST)) {
   app.use(express.static(DIST, { index: false }));
-  app.get(/^(?!\/api\/).*/, (_req, res) => res.sendFile(path.join(DIST, "index.html")));
+
+  app.get(/^(?!\/api\/).*/, (req, res) => {
+    try {
+      const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+      let article = null;
+      const match = req.path.match(/^\/article\/([^/]+)/);
+      if (match) {
+        article = store.get(match[1]);
+        if (!article) {
+          const notFoundHtml = injectPrerenderedHtml(template, req.path, null);
+          return res.status(404).send(notFoundHtml);
+        }
+      }
+      const rendered = injectPrerenderedHtml(template, req.path, article);
+      res.send(rendered);
+    } catch {
+      res.sendFile(path.join(DIST, "index.html"));
+    }
+  });
 }
 
 app.use("/api", (_req, res) => res.status(404).json({ error: "Not found." }));

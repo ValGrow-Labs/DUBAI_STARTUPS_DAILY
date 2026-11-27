@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { CATEGORIES } from "@/data/articles";
 import { ARTICLES_KEY } from "@/context/ContentContext";
 import { estimateReadTime, slugify, useRefreshArticles } from "./useAdmin";
+import SeoPanel from "./SeoPanel";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -26,6 +27,18 @@ const EMPTY = {
   featured: false,
   trending: false,
   blocks: [{ t: "p", x: "" }],
+  // SEO & Metadata fields
+  seoTitle: "",
+  metaDescription: "",
+  focusKeyword: "",
+  secondaryKeywords: "",
+  canonicalUrl: "",
+  ogTitle: "",
+  ogDescription: "",
+  ogImage: "",
+  imageAlt: "",
+  robotsIndex: true,
+  robotsFollow: true,
 };
 
 const BLOCK_TYPES = [
@@ -561,6 +574,9 @@ const Editor = () => {
                 <Toggle checked={form.trending} onChange={(trending) => set({ trending })} label="Most read" hint="Pins it to the Most read list." />
               </div>
             </div>
+
+            {/* SEO & Meta Controls with Live Preview */}
+            <SeoPanel form={form} set={set} errors={errors} />
           </div>
         </aside>
       </form>

@@ -12,14 +12,14 @@ export const CATEGORIES = [
     name: "Funding & Investment",
     short: "Funding",
     accent: "gold",
-    description: "Funding rounds, venture capital and acquisitions across the UAE and the Gulf.",
+    description: "Funding rounds, venture capital and acquisitions across Dubai's startup ecosystem.",
   },
   {
     slug: "business-news",
     name: "Business News",
     short: "Business",
     accent: "ink",
-    description: "UAE companies, the economy and the markets that move the Gulf.",
+    description: "Dubai companies, the local economy and the markets that move the emirate.",
   },
   {
     slug: "technology-ai",

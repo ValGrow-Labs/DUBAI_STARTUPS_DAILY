@@ -9,10 +9,10 @@ const Footer = () => (
   <footer data-testid="site-footer" className="mt-auto border-t hairline bg-bg overflow-hidden">
     <div className="wrap pt-14 pb-8">
       <div className="grid gap-12 md:grid-cols-12">
-        <div className="md:col-span-5">
+        <div className="md:col-span-4">
           <Link to="/" data-testid="footer-logo"><Logo /></Link>
           <p className="mt-5 max-w-sm text-[0.92rem] leading-relaxed text-muted">
-            Independent reporting on the startups, capital and technology shaping Dubai and the UAE.
+            The Daily Pulse of Dubai’s Startup Ecosystem. Independent reporting on founders, capital, events, and business setup in Dubai.
           </p>
           <a
             href="mailto:desk@dubaistartupsdaily.ae"
@@ -24,9 +24,9 @@ const Footer = () => (
           </a>
         </div>
 
-        <nav data-testid="footer-sections" aria-label="Sections" className="md:col-span-4">
-          <p className="eyebrow">Sections</p>
-          <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5">
+        <nav data-testid="footer-sections" aria-label="Sections" className="md:col-span-3">
+          <p className="eyebrow">News Sections</p>
+          <ul className="mt-4 space-y-2">
             {CATEGORIES.map((c) => (
               <li key={c.slug}>
                 <Link to={`/category/${c.slug}`} data-testid={`footer-category-${c.slug}`} className={linkCls}>
@@ -37,13 +37,39 @@ const Footer = () => (
           </ul>
         </nav>
 
-        <nav data-testid="footer-company" aria-label="Newsroom" className="md:col-span-3">
+        <nav aria-label="Ecosystem" className="md:col-span-3">
+          <p className="eyebrow">Ecosystem</p>
+          <ul className="mt-4 space-y-2">
+            <li>
+              <Link to="/setup" className={linkCls}>
+                Business Setup & Guides
+              </Link>
+            </li>
+            <li>
+              <Link to="/events" className={linkCls}>
+                Startup Events Calendar
+              </Link>
+            </li>
+            <li>
+              <Link to="/jobs" className={linkCls}>
+                Dubai Startup Jobs
+              </Link>
+            </li>
+            <li>
+              <a href="mailto:desk@dubaistartupsdaily.ae?subject=Pitch%20Story" className={linkCls}>
+                Pitch the Newsroom
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <nav data-testid="footer-company" aria-label="Newsroom" className="md:col-span-2">
           <p className="eyebrow">Newsroom</p>
-          <ul className="mt-4 space-y-2.5">
+          <ul className="mt-4 space-y-2">
             <li><Link to="/about" data-testid="footer-about" className={linkCls}>About us</Link></li>
-            <li><Link to="/search" data-testid="footer-search" className={linkCls}>Search the archive</Link></li>
+            <li><Link to="/search" data-testid="footer-search" className={linkCls}>Search archive</Link></li>
             <li><a href="mailto:desk@dubaistartupsdaily.ae?subject=Tip" className={linkCls}>Send a tip</a></li>
-            <li><Link to="/" data-testid="footer-home" className={linkCls}>Home</Link></li>
+            <li><Link to="/admin" className={linkCls}>Admin CMS</Link></li>
           </ul>
         </nav>
       </div>

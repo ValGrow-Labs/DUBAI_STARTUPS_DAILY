@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import { CATEGORIES } from "@/data/articles";
 import { useTheme } from "@/context/ThemeContext";
@@ -93,6 +93,33 @@ const Header = () => {
 
           <SectionNav />
 
+          <nav className="hidden xl:flex items-center gap-1 border-l hairline pl-3 text-[0.84rem]">
+            <NavLink
+              to="/setup"
+              className={({ isActive }) =>
+                `px-2.5 py-1 rounded-full transition-colors ${isActive ? "bg-raised text-lime font-semibold" : "text-muted hover:text-ink"}`
+              }
+            >
+              Setup
+            </NavLink>
+            <NavLink
+              to="/events"
+              className={({ isActive }) =>
+                `px-2.5 py-1 rounded-full transition-colors ${isActive ? "bg-raised text-lime font-semibold" : "text-muted hover:text-ink"}`
+              }
+            >
+              Events
+            </NavLink>
+            <NavLink
+              to="/jobs"
+              className={({ isActive }) =>
+                `px-2.5 py-1 rounded-full transition-colors ${isActive ? "bg-raised text-lime font-semibold" : "text-muted hover:text-ink"}`
+              }
+            >
+              Jobs
+            </NavLink>
+          </nav>
+
           <div className="ml-auto lg:ml-0 flex items-center gap-2 sm:gap-3">
             <button
               data-testid="header-search-button"
@@ -173,6 +200,25 @@ const Header = () => {
                 <ArrowUpRight size={22} className="text-muted group-hover:text-acc transition-colors" />
               </Link>
             ))}
+            <div className="mt-6 pt-6 border-t hairline">
+              <p className="font-mono text-[0.72rem] uppercase tracking-wider text-muted px-1 mb-2">Ecosystem</p>
+              {[
+                { to: "/setup", name: "Business Setup & Guides" },
+                { to: "/events", name: "Startup Events" },
+                { to: "/jobs", name: "Startup Jobs" },
+              ].map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="group flex items-center justify-between py-3 border-b hairline text-ink"
+                >
+                  <span className="font-display text-[1.4rem] font-bold">{item.name}</span>
+                  <ArrowUpRight size={18} className="text-muted group-hover:text-acc transition-colors" />
+                </Link>
+              ))}
+            </div>
+
             <div className="mt-8 flex items-center justify-between">
               <Link to="/about" className="text-[0.95rem] text-muted">About the newsroom</Link>
               <span className="flex items-center gap-3 text-[0.9rem] text-muted">Dark mode <ThemeSwitch /></span>

@@ -25,3 +25,9 @@ dist-ssr
 
 # CMS content and uploads (runtime data)
 server/data/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+

@@ -4,6 +4,8 @@ import { Search as SearchIcon, X } from "lucide-react";
 import { searchArticles, trendingArticles, formatDate } from "@/data/articles";
 import CategoryTag from "@/components/CategoryTag";
 import { StoryCard } from "@/components/ArticleCard";
+import SEO from "@/components/SEO";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const SUGGESTED = ["Series B", "AI", "DIFC", "Fintech", "Logistics", "Real estate", "Climate"];
 
@@ -37,7 +39,14 @@ const SearchPage = () => {
 
   return (
     <div data-testid="search-page" className="min-h-[70vh] pb-24">
-      <div className="wrap pt-12 sm:pt-16">
+      <SEO
+        title={q ? `Search: "${q}"` : "Search the Archive"}
+        description="Search past Dubai startup stories, funding rounds, founder interviews, and venture capital reports."
+        noindex
+        nofollow={false}
+      />
+      <div className="wrap pt-10 sm:pt-14">
+        <Breadcrumb items={[{ name: "Search Archive", path: "/search" }]} className="mb-4" />
         <p className="eyebrow">Archive</p>
         <h1 className="display mt-2 text-[2.8rem] sm:text-[4.5rem] leading-[0.9]">Search</h1>
 

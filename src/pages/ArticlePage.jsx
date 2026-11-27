@@ -7,6 +7,9 @@ import { StoryCard } from "@/components/ArticleCard";
 import SectionHead from "@/components/SectionHead";
 import Briefing from "@/components/Briefing";
 import Reveal from "@/components/Reveal";
+import SEO from "@/components/SEO";
+import Breadcrumb from "@/components/Breadcrumb";
+import { getNewsArticleSchema, getBreadcrumbSchema, buildCanonical } from "@/lib/seo";
 
 const Block = ({ b, first }) => {
   if (b.t === "h") return <h2>{b.x}</h2>;
@@ -52,16 +55,10 @@ const ArticlePage = () => {
   const article = getArticle(slug);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    document.title = article ? `${article.title} · Dubai Startups Daily` : "Story not found · Dubai Startups Daily";
-    return () => {
-      document.title = "Dubai Startups Daily";
-    };
-  }, [article]);
-
   if (!article) {
     return (
       <div className="wrap py-28" data-testid="article-not-found">
+        <SEO title="Story Not Found" noindex />
         <p className="eyebrow">Not found</p>
         <h1 className="display mt-3 text-[2.8rem] sm:text-[4rem] leading-[0.95] max-w-[16ch]">We couldn’t find that story.</h1>
         <p className="mt-4 text-muted">It may have moved, or the link may be incomplete.</p>
@@ -75,8 +72,18 @@ const ArticlePage = () => {
   const cat = getCategory(article.category);
   const blocks = article.blocks || article.body || [];
   const related = relatedArticles(article, 3);
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const pageUrl = buildCanonical(`/article/${article.slug}`);
   const shareText = encodeURIComponent(article.title);
+
+  const breadcrumbItems = [
+    { name: cat.name, path: `/category/${cat.slug}` },
+    { name: article.title, path: `/article/${article.slug}` },
+  ];
+
+  const schemas = [
+    getNewsArticleSchema(article, pageUrl),
+    getBreadcrumbSchema(breadcrumbItems),
+  ].filter(Boolean);
 
   const copyLink = async () => {
     try {
@@ -90,14 +97,29 @@ const ArticlePage = () => {
 
   return (
     <div data-testid="article-page" className="pb-24">
+      <SEO
+        title={article.seoTitle || article.title}
+        description={article.metaDescription || article.dek}
+        canonical={article.canonicalUrl || pageUrl}
+        image={article.ogImage || article.image}
+        type="article"
+        publishedTime={article.date ? `${article.date}T07:00:00+04:00` : undefined}
+        modifiedTime={article.updatedAt || article.modifiedDate}
+        author={article.author}
+        section={cat.name}
+        keywords={[
+          ...(article.focusKeyword ? [article.focusKeyword] : []),
+          ...(article.secondaryKeywords || []),
+          ...(article.tags || []),
+          "Dubai startups",
+          cat.name,
+        ]}
+        schema={schemas}
+      />
       <ReadingProgress />
       <article>
         <header className="wrap pt-8 sm:pt-12">
-          <nav className="flex items-center gap-2 text-[0.82rem] text-muted" data-testid="article-breadcrumb" aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-ink transition-colors">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link to={`/category/${cat.slug}`} className="hover:text-ink transition-colors">{cat.name}</Link>
-          </nav>
+          <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
           <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-9 rise rise-1">
@@ -158,7 +180,12 @@ const ArticlePage = () => {
 
         <figure className="wrap mt-10 rise rise-4">
           <div className="tile aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
-            <img src={article.image} alt={article.imageCaption || article.title} />
+            <img
+              src={article.image}
+              alt={article.imageAlt || article.imageCaption || article.title}
+              loading="eager"
+              fetchpriority="high"
+            />
           </div>
           {article.imageCaption && (
             <figcaption className="mt-3 max-w-[44rem] text-[0.82rem] leading-relaxed text-muted">{article.imageCaption}</figcaption>
@@ -223,6 +250,23 @@ const ArticlePage = () => {
 
             <div className="mt-10">
               <Briefing variant="inline" />
+            </div>
+
+            <div className="mt-8 rounded-card bg-surface p-5 ring-1 ring-line/10">
+              <p className="font-mono text-[0.72rem] uppercase tracking-wider text-acc">Ecosystem Resources</p>
+              <h4 className="font-display text-[1.1rem] font-bold text-ink mt-1">Building a company in Dubai?</h4>
+              <p className="text-[0.85rem] text-muted mt-1">Explore our practical formation playbooks, talent boards, and community calendar.</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-[0.82rem]">
+                <Link to="/setup" className="rounded-full bg-raised px-3 py-1 text-ink hover:text-acc transition-colors">
+                  Business Setup Playbooks →
+                </Link>
+                <Link to="/events" className="rounded-full bg-raised px-3 py-1 text-ink hover:text-acc transition-colors">
+                  Dubai Tech Events →
+                </Link>
+                <Link to="/jobs" className="rounded-full bg-raised px-3 py-1 text-ink hover:text-acc transition-colors">
+                  Startup Jobs Board →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

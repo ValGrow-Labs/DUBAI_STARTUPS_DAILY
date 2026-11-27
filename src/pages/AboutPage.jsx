@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES, ARTICLES, byCategory, initials } from "@/data/articles";
 import Reveal from "@/components/Reveal";
+import SEO from "@/components/SEO";
+import Breadcrumb from "@/components/Breadcrumb";
+import { getOrganizationSchema, getBreadcrumbSchema, buildCanonical } from "@/lib/seo";
 
 const PRINCIPLES = [
   {
@@ -20,10 +23,38 @@ const PRINCIPLES = [
 
 const AboutPage = () => {
   const authors = [...new Map(ARTICLES.map((a) => [a.author, a.authorRole])).entries()];
+  const pageUrl = buildCanonical("/about");
+  const breadcrumbItems = [{ name: "About the Newsroom", path: "/about" }];
+
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About Dubai Startups Daily",
+    description:
+      "Dubai Startups Daily reports on founders, venture capital, the economy and technology across Dubai with business desk standards.",
+    url: pageUrl,
+    mainEntity: getOrganizationSchema(),
+  };
+
+  const schemas = [aboutSchema, getBreadcrumbSchema(breadcrumbItems)];
 
   return (
     <div data-testid="about-page" className="pb-24">
-      <section className="wrap pt-12 sm:pt-20">
+      <SEO
+        title="About the Newsroom & Editorial Standards"
+        description="We cover the people and money building Dubai's next companies. Read our sourcing principles, corrections policy, and editorial ethics."
+        canonical={pageUrl}
+        keywords={[
+          "Dubai Startups Daily",
+          "Dubai tech journalism",
+          "Dubai startup newsroom",
+          "UAE business media ethics",
+          "Pitch Dubai desk",
+        ]}
+        schema={schemas}
+      />
+      <section className="wrap pt-10 sm:pt-16">
+        <Breadcrumb items={breadcrumbItems} className="mb-6" />
         <p className="eyebrow rise">About the newsroom</p>
         <h1
           className="display mt-4 max-w-[17ch] text-[2.8rem] sm:text-[4.6rem] lg:text-[6rem] leading-[0.92] tracking-[-0.04em] rise rise-1"
@@ -33,7 +64,7 @@ const AboutPage = () => {
         </h1>
         <div className="mt-10 grid lg:grid-cols-12 rise rise-2">
           <p className="lg:col-span-6 lg:col-start-7 text-[1.15rem] leading-[1.65] text-body">
-            Dubai Startups Daily reports on founders, venture capital, the economy and technology across the UAE, with
+            Dubai Startups Daily reports exclusively on founders, venture capital, the economy and technology across Dubai, with
             the standards of a business desk and the pace of the ecosystem we cover.
           </p>
         </div>

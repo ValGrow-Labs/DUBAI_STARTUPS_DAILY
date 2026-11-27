@@ -6,6 +6,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: Number(process.env.VITE_PORT) || 3000,
     proxy: {
       '/api': 'http://localhost:8787',
       '/uploads': 'http://localhost:8787',
