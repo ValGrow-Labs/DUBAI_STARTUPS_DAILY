@@ -10,6 +10,7 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8787',
       '/uploads': 'http://localhost:8787',
+      '/sitemap.xml': 'http://localhost:8787',
     },
   },
   // Pre-bundle React packages in one pass so the dev server never ends up with two React copies.

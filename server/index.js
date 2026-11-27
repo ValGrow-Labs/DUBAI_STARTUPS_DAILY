@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import * as store from "./store.js";
 import { validateArticle } from "./validate.js";
 import { checkPassword, issueToken, requireAuth, loginLimiter, verifyToken, usingDefaultPassword } from "./auth.js";
-import { generateSitemapXml, generateNewsSitemapXml, injectPrerenderedHtml } from "./seo.js";
+import { generateSitemapXml, generateNewsSitemapXml, injectPrerenderedHtml, fetchPublishedArticlesForSitemap } from "./seo.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 8787;
@@ -110,10 +110,15 @@ Sitemap: https://dubaistartupsdaily.ae/sitemap-news.xml
 `);
 });
 
-app.get("/sitemap.xml", (_req, res) => {
-  res.set("Content-Type", "application/xml; charset=utf-8");
-  res.send(generateSitemapXml(store.list()));
-});
+app.get(
+  "/sitemap.xml",
+  wrap(async (_req, res) => {
+    const articles = await fetchPublishedArticlesForSitemap();
+    res.set("Content-Type", "application/xml; charset=utf-8");
+    res.set("Cache-Control", "public, max-age=300");
+    res.send(generateSitemapXml(articles));
+  })
+);
 
 app.get("/sitemap-news.xml", (_req, res) => {
   res.set("Content-Type", "application/xml; charset=utf-8");
