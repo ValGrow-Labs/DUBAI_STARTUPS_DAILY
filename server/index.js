@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import * as store from "./store.js";
 import { validateArticle } from "./validate.js";
 import { checkPassword, issueToken, requireAuth, loginLimiter, verifyToken, usingDefaultPassword } from "./auth.js";
-import { generateSitemapXml, generateNewsSitemapXml, injectPrerenderedHtml } from "./seo.js";
+import { generateSitemapXml, renderRouteHtml } from "./seo.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 8787;
@@ -101,6 +101,7 @@ Allow: /setup
 Allow: /events
 Allow: /jobs
 Allow: /about
+Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 Disallow: /search
@@ -116,8 +117,7 @@ app.get("/sitemap.xml", (_req, res) => {
 });
 
 app.get("/sitemap-news.xml", (_req, res) => {
-  res.set("Content-Type", "application/xml; charset=utf-8");
-  res.send(generateNewsSitemapXml(store.list()));
+  res.status(404).set("Content-Type", "text/plain; charset=utf-8").send("Not found.");
 });
 
 /* ---------- Built site with Dynamic Server-Side SEO Prerender ---------- */
@@ -127,17 +127,11 @@ if (fs.existsSync(DIST)) {
   app.get(/^(?!\/api\/).*/, (req, res) => {
     try {
       const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
-      let article = null;
-      const match = req.path.match(/^\/article\/([^/]+)/);
-      if (match) {
-        article = store.get(match[1]);
-        if (!article) {
-          const notFoundHtml = injectPrerenderedHtml(template, req.path, null);
-          return res.status(404).send(notFoundHtml);
-        }
-      }
-      const rendered = injectPrerenderedHtml(template, req.path, article);
-      res.send(rendered);
+      const { status, html } = renderRouteHtml(template, req.path, {
+        getArticle: store.get,
+        getArticles: store.list,
+      });
+      res.status(status).send(html);
     } catch {
       res.sendFile(path.join(DIST, "index.html"));
     }

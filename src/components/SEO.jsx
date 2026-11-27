@@ -13,12 +13,14 @@ import {
  */
 function setMetaTag(attr, key, content) {
   if (!content) return;
-  let el = document.querySelector(`meta[${attr}="${key}"]`);
+  const existing = document.querySelectorAll(`meta[${attr}="${key}"]`);
+  let el = existing[0];
   if (!el) {
     el = document.createElement("meta");
     el.setAttribute(attr, key);
     document.head.appendChild(el);
   }
+  for (let i = 1; i < existing.length; i++) existing[i].remove();
   el.setAttribute("content", content);
 }
 

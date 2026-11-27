@@ -6,6 +6,7 @@ Allow: /setup
 Allow: /events
 Allow: /jobs
 Allow: /about
+Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 Disallow: /search

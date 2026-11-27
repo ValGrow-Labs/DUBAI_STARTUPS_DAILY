@@ -61,7 +61,7 @@ const AdminApp = () => {
   if (status !== "in") {
     return (
       <>
-        <SEO title="CMS" noindex nofollow canonical={false} />
+        <SEO title="CMS" noindex canonical={false} />
         <Login onSignIn={signIn} />
       </>
     );
@@ -69,7 +69,7 @@ const AdminApp = () => {
 
   return (
     <div className="min-h-[100dvh] bg-bg text-body" data-testid="admin-app">
-      <SEO title="CMS" noindex nofollow canonical={false} />
+      <SEO title="CMS" noindex canonical={false} />
       <AdminBar onSignOut={signOut} />
       <main className="page-in">
         <Routes>

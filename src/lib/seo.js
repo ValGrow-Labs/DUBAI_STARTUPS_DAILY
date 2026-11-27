@@ -6,7 +6,8 @@ export const SITE_NAME = "Dubai Startups Daily";
 export const SITE_ABBR = "DSD";
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://dubai-startups-daily.vercel.app").replace(/\/$/, "");
 export const TWITTER_HANDLE = "@DubaiDaily";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/favicon.svg`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
+export const PUBLISHER_LOGO_URL = `${SITE_URL}/logo.png`;
 
 export const DEFAULT_SEO = {
   title: "Dubai Startups Daily · The Daily Pulse of Dubai’s Startup Ecosystem",
@@ -39,7 +40,7 @@ export function getOrganizationSchema() {
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/favicon.svg`,
+      url: PUBLISHER_LOGO_URL,
       width: 512,
       height: 512,
     },
@@ -136,7 +137,9 @@ export function getNewsArticleSchema(article, pageUrl) {
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/favicon.svg`,
+        url: PUBLISHER_LOGO_URL,
+        width: 512,
+        height: 512,
       },
     },
     keywords: [

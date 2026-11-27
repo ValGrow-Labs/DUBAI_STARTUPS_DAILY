@@ -7,7 +7,7 @@
     "dev": "concurrently -k -n web,cms -c green,yellow \"vite\" \"node --watch server/index.js\"",
     "dev:web": "vite",
     "dev:cms": "node --watch server/index.js",
-    "build": "vite build",
+    "build": "vite build && node scripts/sync-template.mjs",
     "start": "node server/index.js",
     "lint": "oxlint",
     "preview": "vite preview"

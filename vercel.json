@@ -5,8 +5,12 @@
       "destination": "/api/sitemap"
     },
     {
-      "source": "/((?!api/|assets/|uploads/|favicon\\.svg|robots\\.txt|sitemap\\.xml).*)",
-      "destination": "/index.html"
+      "source": "/sitemap-news.xml",
+      "destination": "/api/render?path=/sitemap-news.xml"
+    },
+    {
+      "source": "/((?!api/|assets/|uploads/|favicon\\.svg|og-default\\.png|logo\\.png|robots\\.txt|sitemap\\.xml).*)",
+      "destination": "/api/render?path=/$1"
     }
   ]
 }
