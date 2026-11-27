@@ -24,7 +24,7 @@ const CategoryPage = () => {
   if (!cat) {
     return (
       <div className="wrap py-28" data-testid="category-not-found">
-        <SEO title="Section Not Found" noindex />
+        <SEO title="Section Not Found" noindex nofollow canonical={false} />
         <p className="eyebrow">Not found</p>
         <h1 className="display mt-3 text-[2.8rem] sm:text-[4rem] leading-[0.95]">That section doesn’t exist.</h1>
         <Link to="/" className="btn-lime mt-8">

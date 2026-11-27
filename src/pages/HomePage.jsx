@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, Building2, Calendar, Briefcase } from "lucide-react";
 import { CATEGORIES, ARTICLES, featuredArticle, latestArticles, byCategory } from "@/data/articles";
 import SEO from "@/components/SEO";
-import { getOrganizationSchema, getWebSiteSchema } from "@/lib/seo";
+import { getOrganizationSchema, getWebSiteSchema, buildCanonical } from "@/lib/seo";
 import { StoryOverlay, StoryCard, StoryRow, MoreLink } from "@/components/ArticleCard";
 import MostRead from "@/components/MostRead";
 import SectionHead from "@/components/SectionHead";
@@ -221,6 +221,7 @@ const HomePage = () => {
       <SEO
         title="Dubai Startups Daily · The Daily Pulse of Dubai’s Startup Ecosystem"
         description="The Daily Pulse of Dubai’s Startup Ecosystem. Breaking news on seed-to-growth funding rounds, AI, venture capital, business setup, tech events, and startup jobs in Dubai."
+        canonical={buildCanonical("/")}
         keywords={[
           "Dubai startups",
           "Dubai startup ecosystem",

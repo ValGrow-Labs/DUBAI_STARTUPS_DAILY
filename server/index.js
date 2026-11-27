@@ -105,8 +105,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /search
 
-Sitemap: https://dubaistartupsdaily.ae/sitemap.xml
-Sitemap: https://dubaistartupsdaily.ae/sitemap-news.xml
+Sitemap: https://dubai-startups-daily.vercel.app/sitemap.xml
 `);
 });
 

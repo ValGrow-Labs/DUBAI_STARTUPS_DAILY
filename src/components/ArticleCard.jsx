@@ -25,12 +25,15 @@ export const Meta = ({ article, className = "", light = false, showDate = true }
  */
 export const StoryOverlay = ({ article, className = "", size = "lg", eager = false }) => (
   <article data-testid={`article-card-${article.slug}`} className={`group tile scrim ${className}`}>
-    <img
-      src={article.image}
-      alt={article.imageCaption || article.title}
-      loading={eager ? "eager" : "lazy"}
-      className="absolute inset-0"
-    />
+    {article.image && (
+      <img
+        src={article.image}
+        alt={article.imageAlt || article.imageCaption || article.title}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager && size === "lg" ? "high" : undefined}
+        className="absolute inset-0"
+      />
+    )}
     <Link to={`/article/${article.slug}`} tabIndex={-1} aria-hidden="true" className="absolute inset-0 z-[5]" />
     <div className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 ${size === "lg" ? "p-5 sm:p-8 lg:p-10" : "p-5 sm:p-6"}`}>
       <CategoryTag slug={article.category} variant="glass" className="pointer-events-auto" />
@@ -59,7 +62,7 @@ export const StoryOverlay = ({ article, className = "", size = "lg", eager = fal
 export const StoryCard = ({ article, className = "", aspect = "aspect-[4/3]", size = "md", showDek = false }) => (
   <article data-testid={`article-card-${article.slug}`} className={`group relative flex flex-col ${className}`}>
     <div className={`tile ${aspect}`}>
-      <img src={article.image} alt={article.imageCaption || article.title} loading="lazy" />
+      {article.image && <img src={article.image} alt={article.imageAlt || article.imageCaption || article.title} loading="lazy" />}
     </div>
     <div className="pt-4 flex flex-1 flex-col">
       <CategoryTag slug={article.category} className="self-start" />

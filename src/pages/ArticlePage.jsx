@@ -58,7 +58,7 @@ const ArticlePage = () => {
   if (!article) {
     return (
       <div className="wrap py-28" data-testid="article-not-found">
-        <SEO title="Story Not Found" noindex />
+        <SEO title="Story Not Found" noindex nofollow canonical={false} />
         <p className="eyebrow">Not found</p>
         <h1 className="display mt-3 text-[2.8rem] sm:text-[4rem] leading-[0.95] max-w-[16ch]">We couldn’t find that story.</h1>
         <p className="mt-4 text-muted">It may have moved, or the link may be incomplete.</p>
@@ -87,7 +87,7 @@ const ArticlePage = () => {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(pageUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -103,8 +103,8 @@ const ArticlePage = () => {
         canonical={article.canonicalUrl || pageUrl}
         image={article.ogImage || article.image}
         type="article"
-        publishedTime={article.date ? `${article.date}T07:00:00+04:00` : undefined}
-        modifiedTime={article.updatedAt || article.modifiedDate}
+        publishedTime={article.publishedAt || (article.date ? `${article.date}T07:00:00+04:00` : undefined)}
+        modifiedTime={article.updatedAt || article.modifiedDate || article.publishedAt}
         author={article.author}
         section={cat.name}
         keywords={[
@@ -157,7 +157,7 @@ const ArticlePage = () => {
                 {copied ? "Copied" : "Copy link"}
               </button>
               <a
-                href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(url)}`}
+                href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(pageUrl)}`}
                 target="_blank"
                 rel="noreferrer"
                 data-testid="article-share-x"
@@ -166,7 +166,7 @@ const ArticlePage = () => {
                 Post on X
               </a>
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}
                 target="_blank"
                 rel="noreferrer"
                 data-testid="article-share-linkedin"
@@ -178,19 +178,21 @@ const ArticlePage = () => {
           </div>
         </header>
 
-        <figure className="wrap mt-10 rise rise-4">
-          <div className="tile aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
-            <img
-              src={article.image}
-              alt={article.imageAlt || article.imageCaption || article.title}
-              loading="eager"
-              fetchpriority="high"
-            />
-          </div>
-          {article.imageCaption && (
-            <figcaption className="mt-3 max-w-[44rem] text-[0.82rem] leading-relaxed text-muted">{article.imageCaption}</figcaption>
-          )}
-        </figure>
+        {article.image && (
+          <figure className="wrap mt-10 rise rise-4">
+            <div className="tile aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
+              <img
+                src={article.image}
+                alt={article.imageAlt || article.imageCaption || article.title}
+                loading="eager"
+                fetchPriority="high"
+              />
+            </div>
+            {article.imageCaption && (
+              <figcaption className="mt-3 max-w-[44rem] text-[0.82rem] leading-relaxed text-muted">{article.imageCaption}</figcaption>
+            )}
+          </figure>
+        )}
 
         <div className="wrap mt-14 sm:mt-20 grid gap-12 lg:grid-cols-12">
           <aside className="hidden lg:block lg:col-span-3">

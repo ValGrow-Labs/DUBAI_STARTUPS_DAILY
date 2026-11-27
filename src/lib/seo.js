@@ -4,7 +4,7 @@
 
 export const SITE_NAME = "Dubai Startups Daily";
 export const SITE_ABBR = "DSD";
-export const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://dubaistartupsdaily.ae").replace(/\/$/, "");
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://dubai-startups-daily.vercel.app").replace(/\/$/, "");
 export const TWITTER_HANDLE = "@DubaiDaily";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/favicon.svg`;
 
@@ -96,8 +96,12 @@ export function getNewsArticleSchema(article, pageUrl) {
       : `${SITE_URL}${article.image.startsWith("/") ? "" : "/"}${article.image}`
     : DEFAULT_OG_IMAGE;
 
-  const datePub = article.date ? `${article.date}T07:00:00+04:00` : new Date().toISOString();
+  const datePub =
+    article.publishedAt ||
+    (article.date ? `${article.date}T07:00:00+04:00` : new Date().toISOString());
   const dateMod = article.updatedAt || article.modifiedDate || datePub;
+  const authorName = article.author || SITE_NAME;
+  const isOrgAuthor = authorName === SITE_NAME;
 
   return {
     "@context": "https://schema.org",
@@ -111,15 +115,21 @@ export function getNewsArticleSchema(article, pageUrl) {
     image: [imageUrl],
     datePublished: datePub,
     dateModified: dateMod,
-    author: {
-      "@type": "Person",
-      name: article.author || "Editorial Desk",
-      jobTitle: article.authorRole || "Journalist",
-      worksFor: {
-        "@type": "Organization",
-        name: SITE_NAME,
-      },
-    },
+    author: isOrgAuthor
+      ? {
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: SITE_URL,
+        }
+      : {
+          "@type": "Person",
+          name: authorName,
+          jobTitle: article.authorRole || "Journalist",
+          worksFor: {
+            "@type": "Organization",
+            name: SITE_NAME,
+          },
+        },
     publisher: {
       "@type": "NewsMediaOrganization",
       name: SITE_NAME,

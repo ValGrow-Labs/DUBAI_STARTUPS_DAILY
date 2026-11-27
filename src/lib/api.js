@@ -109,6 +109,8 @@ function mapSupabaseArticle(row) {
     author: "Dubai Startups Daily",
     authorRole: "Editorial Desk",
     date: String(rawDate).slice(0, 10),
+    publishedAt: row.published_at || row.created_at || null,
+    updatedAt: row.updated_at || row.published_at || row.created_at || null,
     readTime: estimateReadTime(blocks),
     image: row.featured_image || "",
     imageCaption: "",

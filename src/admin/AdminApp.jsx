@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import { ArrowUpRight, LogOut } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
+import SEO from "@/components/SEO";
 import { useTheme } from "@/context/ThemeContext";
 import { useSession } from "./useAdmin";
 import Login from "./Login";
@@ -57,10 +58,18 @@ const AdminApp = () => {
       </div>
     );
   }
-  if (status !== "in") return <Login onSignIn={signIn} />;
+  if (status !== "in") {
+    return (
+      <>
+        <SEO title="CMS" noindex nofollow canonical={false} />
+        <Login onSignIn={signIn} />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-[100dvh] bg-bg text-body" data-testid="admin-app">
+      <SEO title="CMS" noindex nofollow canonical={false} />
       <AdminBar onSignOut={signOut} />
       <main className="page-in">
         <Routes>

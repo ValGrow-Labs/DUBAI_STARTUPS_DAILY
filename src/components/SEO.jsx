@@ -22,17 +22,26 @@ function setMetaTag(attr, key, content) {
   el.setAttribute("content", content);
 }
 
+function removeMetaTag(attr, key) {
+  document.querySelectorAll(`meta[${attr}="${key}"]`).forEach((el) => el.remove());
+}
+
 /**
- * Helper to get or create a <link> element by rel
+ * Helper to get or create a <link> element by rel (deduplicates if multiple exist)
  */
 function setLinkTag(rel, href) {
-  if (!href) return;
-  let el = document.querySelector(`link[rel="${rel}"]`);
+  const existing = document.querySelectorAll(`link[rel="${rel}"]`);
+  if (!href) {
+    existing.forEach((el) => el.remove());
+    return;
+  }
+  let el = existing[0];
   if (!el) {
     el = document.createElement("link");
     el.setAttribute("rel", rel);
     document.head.appendChild(el);
   }
+  for (let i = 1; i < existing.length; i++) existing[i].remove();
   el.setAttribute("href", href);
 }
 
@@ -65,8 +74,8 @@ const SEO = ({
       : DEFAULT_SEO.title;
     document.title = finalTitle;
 
-    // 2. Canonical URL
-    const canonicalUrl = canonical || buildCanonical(pathname);
+    // 2. Canonical URL (pass canonical={false} to omit on error/404 views)
+    const canonicalUrl = canonical === false ? "" : canonical || buildCanonical(pathname);
     setLinkTag("canonical", canonicalUrl);
 
     // 3. Meta Description
@@ -82,7 +91,8 @@ const SEO = ({
     // 5. Open Graph tags
     setMetaTag("property", "og:title", finalTitle);
     setMetaTag("property", "og:description", finalDesc);
-    setMetaTag("property", "og:url", canonicalUrl);
+    if (canonicalUrl) setMetaTag("property", "og:url", canonicalUrl);
+    else removeMetaTag("property", "og:url");
     setMetaTag("property", "og:type", type);
     setMetaTag("property", "og:site_name", SITE_NAME);
     setMetaTag("property", "og:locale", "en_US");
@@ -95,9 +105,18 @@ const SEO = ({
 
     if (type === "article") {
       if (publishedTime) setMetaTag("property", "article:published_time", publishedTime);
+      else removeMetaTag("property", "article:published_time");
       if (modifiedTime) setMetaTag("property", "article:modified_time", modifiedTime);
+      else removeMetaTag("property", "article:modified_time");
       if (author) setMetaTag("property", "article:author", author);
+      else removeMetaTag("property", "article:author");
       if (section) setMetaTag("property", "article:section", section);
+      else removeMetaTag("property", "article:section");
+    } else {
+      removeMetaTag("property", "article:published_time");
+      removeMetaTag("property", "article:modified_time");
+      removeMetaTag("property", "article:author");
+      removeMetaTag("property", "article:section");
     }
 
     // 6. Twitter Card tags
@@ -111,6 +130,8 @@ const SEO = ({
     if (keywords) {
       const kw = Array.isArray(keywords) ? keywords.join(", ") : keywords;
       setMetaTag("name", "keywords", kw);
+    } else {
+      removeMetaTag("name", "keywords");
     }
 
     // 8. JSON-LD Structured Data

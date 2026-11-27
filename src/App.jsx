@@ -6,6 +6,7 @@ import ContentProvider from "@/context/ContentContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import SEO from "@/components/SEO";
 import HomePage from "@/pages/HomePage";
 import CategoryPage from "@/pages/CategoryPage";
 import ArticlePage from "@/pages/ArticlePage";
@@ -17,6 +18,13 @@ import JobsPage from "@/pages/JobsPage";
 
 const NotFound = () => (
   <div className="wrap py-24 sm:py-32" data-testid="not-found-page">
+    <SEO
+      title="Page Not Found"
+      description="The page you requested could not be found on Dubai Startups Daily."
+      noindex
+      nofollow
+      canonical={false}
+    />
     <p
       aria-hidden="true"
       className="font-display text-[8rem] sm:text-[13rem] font-extrabold leading-[0.8] tracking-[-0.07em] text-lime"
