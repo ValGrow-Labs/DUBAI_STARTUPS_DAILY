@@ -212,7 +212,7 @@ const EcosystemHub = () => (
 
 const HomePage = () => {
   const lead = featuredArticle();
-  const pool = latestArticles(30).filter((a) => a.slug !== lead.slug);
+  const pool = lead ? latestArticles(30).filter((a) => a.slug !== lead.slug) : [];
   const side = pool.slice(0, 2);
   const latest = pool.slice(2, 8);
 
@@ -232,10 +232,21 @@ const HomePage = () => {
         ]}
         schema={[getOrganizationSchema(), getWebSiteSchema()]}
       />
-      <Hero lead={lead} side={side} />
-      <NumbersRail />
-      <Latest items={latest} />
-      <Explorer />
+      {lead ? (
+        <>
+          <Hero lead={lead} side={side} />
+          <NumbersRail />
+          <Latest items={latest} />
+          <Explorer />
+        </>
+      ) : (
+        <section className="wrap pt-12 sm:pt-16">
+          <div className="rounded-tile bg-surface p-10 sm:p-16 text-center ring-1 ring-line/10" data-testid="home-empty">
+            <h1 className="display text-[2.2rem] sm:text-[3rem]">No stories published yet.</h1>
+            <p className="mt-3 text-muted">Check back soon for the latest news from Dubai’s startup ecosystem.</p>
+          </div>
+        </section>
+      )}
       <EcosystemHub />
       <div className="pt-16 sm:pt-24">
         <Briefing />

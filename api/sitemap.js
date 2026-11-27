@@ -1,9 +1,9 @@
-import { fetchPublishedArticlesForSitemap, generateSitemapXml } from "../server/seo.js";
+import { getLocalArticlesForSitemap, generateSitemapXml } from "../server/seo.js";
 
 const VERCEL_SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || "https://dubai-startups-daily.vercel.app").replace(/\/$/, "");
 
 export default async function handler(_req, res) {
-  const articles = await fetchPublishedArticlesForSitemap();
+  const articles = getLocalArticlesForSitemap();
   const xml = generateSitemapXml(articles, VERCEL_SITE_URL);
 
   res.status(200);

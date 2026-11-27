@@ -12,13 +12,15 @@ const LatestBar = ({ className = "" }) => {
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || items.length < 2) return;
     const t = setTimeout(() => setI((n) => (n + 1) % items.length), DURATION);
     return () => clearTimeout(t);
   }, [i, paused, items.length]);
 
+  if (!items.length) return null;
+
   const go = (d) => setI((n) => (n + d + items.length) % items.length);
-  const a = items[i];
+  const a = items[i % items.length];
   const cat = getCategory(a.category);
 
   return (

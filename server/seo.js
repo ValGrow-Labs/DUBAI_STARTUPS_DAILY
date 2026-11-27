@@ -1,88 +1,17 @@
 // Server-side SEO generator: XML sitemaps + HTML meta & Schema.org injection.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { createClient } from "@supabase/supabase-js";
 import { CATEGORIES } from "../src/data/categories.js";
+import { ARTICLES_A } from "../src/data/stories-a.js";
+import { ARTICLES_B } from "../src/data/stories-b.js";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
 const SITE_NAME = "Dubai Startups Daily";
 const DEFAULT_SITE_URL = "https://dubai-startups-daily.vercel.app";
-const WEBSITE_SLUG = "dubai-startups-daily";
 const SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
 
-function readEnvLocal() {
-  const envPath = path.join(here, "..", ".env.local");
-  const parsed = {};
-  if (!fs.existsSync(envPath)) return parsed;
-  const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/);
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eq = trimmed.indexOf("=");
-    if (eq === -1) continue;
-    const key = trimmed.slice(0, eq).trim();
-    const val = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
-    if (key) parsed[key] = val;
-  }
-  return parsed;
-}
-
 /**
- * Fetches published articles for Dubai Startups Daily from Supabase (read-only).
- * Returns an empty array if credentials are missing or the query fails.
+ * Returns bundled local articles sorted newest-first for static/serverless sitemap generation.
  */
-export async function fetchPublishedArticlesForSitemap() {
-  const localEnv = readEnvLocal();
-  const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || localEnv.VITE_SUPABASE_URL || "").trim();
-  const supabaseKey = (
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    localEnv.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    ""
-  ).trim();
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.warn("[sitemap] Supabase environment variables are missing; generating sitemap without dynamic articles.");
-    return [];
-  }
-
-  try {
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-
-    const { data: website, error: websiteError } = await supabase
-      .from("websites")
-      .select("id")
-      .eq("slug", WEBSITE_SLUG)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (websiteError || !website) {
-      if (websiteError) console.warn("[sitemap] Supabase websites lookup failed:", websiteError.message);
-      return [];
-    }
-
-    const { data, error } = await supabase
-      .from("articles")
-      .select("slug, status, updated_at, published_at, created_at")
-      .eq("website_id", website.id)
-      .eq("status", "published")
-      .order("published_at", { ascending: false, nullsFirst: false })
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.warn("[sitemap] Supabase articles lookup failed:", error.message);
-      return [];
-    }
-
-    return (data || []).filter((a) => a.status === "published" && typeof a.slug === "string" && a.slug.trim());
-  } catch (err) {
-    console.warn("[sitemap] Unexpected Supabase error:", err?.message || err);
-    return [];
-  }
+export function getLocalArticlesForSitemap() {
+  return [...ARTICLES_A, ...ARTICLES_B].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
 const escapeXml = (unsafe = "") =>
